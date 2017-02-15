@@ -16,7 +16,7 @@ angular.module('esqueleto', [
 
 		$routeProvider
 			.when('/', {
-				template: '<h1>Mercado Amigo</h1>'
+				template: '<h1>Home View</h1>'
 			})
 			.when('/about', {
 				templateUrl: 'views/about.html',
