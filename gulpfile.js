@@ -1,19 +1,26 @@
 'use strict';
 
 const gulp 	     = require('gulp');
+const gutil 	 = require('gulp-util');
 const connect    = require('gulp-connect');
 const pug 	     = require('gulp-pug');
 const sass       = require('gulp-sass');
 const uglify     = require('gulp-uglify');
-const pump 	     = require('pump');
 const sourcemaps = require('gulp-sourcemaps');
 const concat     = require('gulp-concat');
 const bower      = require('gulp-bower');
 const bowerFiles = require('main-bower-files');
 const cssnano    = require('gulp-cssnano');
 
-var source = './app/';
+var source = 'app/'; // removed ./ due the undetection of new/deleted files
 var dest   = './www/';
+
+function error_handler(error) {
+	// Output an error message
+	gutil.log(gutil.colors.red('Error (' + error.plugin + '): ' + error.message));
+	// emit the end event, to properly end the task
+	this.emit('end');
+}
 
 gulp.task('connect', function() {
 	connect.server({
@@ -25,32 +32,24 @@ gulp.task('connect', function() {
 
 gulp.task('index', function() {
 	return gulp.src(source + 'index.pug')
-		.pipe(pug({ }))
+		.pipe(pug({ }).on('error', error_handler))
 		.pipe(gulp.dest(dest))
 		.pipe(connect.reload());
 });
 
 gulp.task('compile-views', function() {
 	return gulp.src(source + 'views/*.pug')
-		.pipe(pug({ }))
+		.pipe(pug({ }).on('error', error_handler))
 		.pipe(gulp.dest(dest + 'views'))
 		.pipe(connect.reload());
 });
 
 gulp.task('compile-sass', function() {
 	return gulp.src(source + 'styles/*.scss')
-		.pipe(sass().on('error', sass.logError))
+		.pipe(sass().on('error', error_handler))
 		.pipe(gulp.dest(dest + 'styles'))
 		.pipe(connect.reload());
 });
-
-// gulp.task('compress', function(cb) {
-// 	pump([
-// 		gulp.src(source + 'scripts/**/*.js'),
-// 		uglify(),
-// 		gulp.dest(dest + 'scripts')
-// 	], cb);
-// });
 
 gulp.task('bower-restore', function() {
 	return bower();
@@ -90,7 +89,7 @@ gulp.task("css", ["bower-restore"], function() {
 });
 
 gulp.task('copy-images', function() {
-	return gulp.src(source + 'images/**/*.*')
+	return gulp.src(source + 'images/**/*.{png,gif,jpg,jpeg}')
 		.pipe(gulp.dest(dest + 'images'))
 		.pipe(connect.reload());
 });
@@ -106,7 +105,7 @@ gulp.task('copy-fonts', function() {
 });
 
 gulp.task('copy-videos', function() {	
-	return gulp.src(source + 'videos/**/*.*')
+	return gulp.src(source + 'videos/**/*.{mp4,ogg,webm}')
 		.pipe(gulp.dest(dest + 'videos'))
 		.pipe(connect.reload());
 });
@@ -119,7 +118,7 @@ gulp.task('watch', function() {
 	gulp.watch([source + 'scripts/**/*.js'], ['app-bundle']);
 	gulp.watch(bowerFiles({ filter: '**/*.css' }), ['css']);
 	gulp.watch(bowerFiles({ filter: '**/*.js' }), ['vendor-bundle']);
-	gulp.watch(bowerFiles(), ['copy-fonts'])
+	gulp.watch(bowerFiles(), ['copy-fonts']);
 	gulp.watch([source + 'images/**/*.*'], ['copy-images']);
 	gulp.watch([source + 'fonts/**/*.*'], ['copy-fonts']);
 	gulp.watch([source + 'videos/**/*.*'], ['copy-videos']);

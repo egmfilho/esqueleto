@@ -19,7 +19,7 @@
     "gulp-sass": "^3.1.0",
     "gulp-sourcemaps": "^2.4.1",
     "gulp-uglify": "^2.0.1",
-    "main-bower-files": "^2.13.1",
-    "pump": "^1.0.2"
+    "gulp-util": "^3.0.8",
+    "main-bower-files": "^2.13.1"
   }
 }
