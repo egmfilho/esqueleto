@@ -1,4 +1,4 @@
-'use script';
+'use strict';
 
 angular.module('esqueleto.controllers')
 	.controller('AboutCtrl', [function() {
